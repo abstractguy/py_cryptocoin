@@ -110,7 +110,7 @@ class CryptoCoin:
         
         
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def __init__ : " + str(e)
             logging.warning(msg)        
         
     
@@ -131,7 +131,7 @@ class CryptoCoin:
             return content
         
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def get_url : " + str(e)
             logging.warning(msg)            
             
             
@@ -164,7 +164,7 @@ class CryptoCoin:
             url = "https://api.coinmarketcap.com/v1/ticker/?start={}&limit={}&convert={}".format(start,limit,currency)
             return self.get_json_from_url(url)
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def getAllCoinData : " + str(e)
             logging.warning(msg)        
         
     
@@ -179,7 +179,7 @@ class CryptoCoin:
             return self.get_json_from_url(url)
         
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def getGlobalData : " + str(e)
             logging.warning(msg)
         
     def getCoinData(self, Coin=None, currency=None):
@@ -196,7 +196,7 @@ class CryptoCoin:
             return self.data
         
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def getCoinData : " + str(e)
             logging.warning(msg)
         
         
@@ -219,7 +219,7 @@ class CryptoCoin:
             return coinlist
             
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def returnCoins : " + str(e)
             logging.warning(msg)        
     
     
@@ -239,7 +239,7 @@ class CryptoCoin:
             
             return option
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def returnOptions : " + str(e)
             logging.warning(msg)
         
     def returnFunctions(self):
@@ -258,7 +258,7 @@ class CryptoCoin:
                 functie += "def " + symbol+ "(self):\n"
                 functie += "\t return '" + d['id'] + "'\n\n"
         except Exception as e:
-            msg = "def get_json_from_url : " + str(e)
+            msg = "def returnFunctions : " + str(e)
             logging.warning(msg)        
         
         
