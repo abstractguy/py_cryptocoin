@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='py_cryptocoin',
-      version='0.8',
+      version='0.1',
       description='Python3 CryptoCoin data parser',
       url='https://bitbucket.org/tvdsluijs/py_cryptocoin',
       author='Theodorus van der Sluijs',
