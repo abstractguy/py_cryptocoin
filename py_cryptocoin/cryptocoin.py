@@ -5,7 +5,7 @@ import json
 class CryptoCoin:
     def __init__(self):
         try:
-            
+            # list with shortcodes, it returns the right name
             self.options = {"btc": self.btc(),
                             "eth": self.eth(),
                             "xrp": self.xrp(),
@@ -113,17 +113,15 @@ class CryptoCoin:
             msg = "def get_json_from_url : " + str(e)
             logging.warning(msg)        
         
-
-        # self.coin = self.options[coin.lower()]
-
-        # self.url = "https://api.coinmarketcap.com/v1/ticker/{}/?convert=EUR".format(self.coin)
-        # self.get_coin_price()
     
     def get_url(self, url=None):
+        """
+        Function to get the url and get the content
+        returns decoded utf8 content
+        """
         try:
             if url is None:
                 raise Exception("No Url")
-            
             
             r = requests.get(url)
             if r.status_code > 200:
@@ -139,6 +137,10 @@ class CryptoCoin:
             
 
     def get_json_from_url(self, url):
+        """
+        Function to parse the url content into json 
+        returns decoded utf8 content
+        """
         try:        
             content = self.get_url(url)
             if content is None:
@@ -150,7 +152,14 @@ class CryptoCoin:
             msg = "def get_json_from_url : " + str(e)
             logging.warning(msg)
 
+
+
     def getAllCoinData(self, start=None, limit=None, currency=None):
+        """
+        Function to get all coin currency data 
+        parameters start, limit, currency
+        returns decoded utf8 Dict
+        """
         try:
             url = "https://api.coinmarketcap.com/v1/ticker/?start={}&limit={}&convert={}".format(start,limit,currency)
             return self.get_json_from_url(url)
@@ -160,6 +169,11 @@ class CryptoCoin:
         
     
     def getGlobalData(self, currency=None):
+        """
+        Function to get all coin global data 
+        parameters currency
+        returns decoded utf8 Dict
+        """        
         try:
             url = " https://api.coinmarketcap.com/v1/global/?convert={}".format(currency)
             return self.get_json_from_url(url)
@@ -169,10 +183,17 @@ class CryptoCoin:
             logging.warning(msg)
         
     def getCoinData(self, Coin=None, currency=None):
+        """
+        Function to get one coin currency data 
+        parameters cryptocoin shortcode, currency
+        returns decoded utf8 Dict
+        """             
         try:
             coin = self.options[Coin.lower()]
             url = "https://api.coinmarketcap.com/v1/ticker/{}/?convert={}".format(coin, currency)
-            return self.get_json_from_url(url)
+            self.data = self.get_json_from_url(url)
+        
+            return self.data
         
         except Exception as e:
             msg = "def get_json_from_url : " + str(e)
@@ -180,6 +201,71 @@ class CryptoCoin:
         
         
         
+    def returnCoins(self):
+        """
+            small function for myself to return a coinlist for the README file
+            returns list with coins
+        """
+        try: 
+            coinlist = ""
+        
+            for d in self.data:
+                # "rip": self.rip(),
+                symbol = d['symbol']
+                symbol = symbol.lower()
+                
+                coinlist += "- '" + symbol + "' : '" + d['name'] + "', "    
+            
+            return coinlist
+            
+        except Exception as e:
+            msg = "def get_json_from_url : " + str(e)
+            logging.warning(msg)        
+    
+    
+    def returnOptions(self):
+        """
+            small function for myself to return a option list for __init__
+            returns list with options 
+        """        
+        try:
+            option = ""
+            
+            for d in self.data:
+                # "rip": self.rip(),
+                symbol = d['symbol']
+                symbol = symbol.lower()
+                option += '"' + symbol + '": self.' + symbol + "(),\n"
+            
+            return option
+        except Exception as e:
+            msg = "def get_json_from_url : " + str(e)
+            logging.warning(msg)
+        
+    def returnFunctions(self):
+        """
+            small function for myself to return a list with functions for the self.options
+            returns list with functions 
+        """           
+        try:
+            functie = ""
+            
+            for d in self.data:
+                # "rip": self.rip(),
+                symbol = d['symbol']
+                symbol = symbol.lower()
+                
+                functie += "def " + symbol+ "(self):\n"
+                functie += "\t return '" + d['id'] + "'\n\n"
+        except Exception as e:
+            msg = "def get_json_from_url : " + str(e)
+            logging.warning(msg)        
+        
+        
+        
+    """
+    some functions to return the right coin name
+    """
     def btc(self):
          return 'bitcoin'
     
