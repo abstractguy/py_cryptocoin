@@ -125,7 +125,7 @@ class CryptoCoin:
             
             r = requests.get(url)
             if r.status_code > 200:
-                raise Exception("Url problem")
+                raise Exception("Url " + url + "problem : " + str(r.status_code))
             
             content = r.content.decode("utf8")
             return content
