@@ -17,7 +17,7 @@ Create your own caching mechanism to keep requests to minimum
 ## How do I get set up?
 
 * Install this script with:
-    * pip3 py_cryptocoin --upgrade (or pip py_nsapi --upgrade )
+    * pip3 py_cryptocoin --upgrade (or pip py_cryptocoin --upgrade )
 * ready to use it!
 
 ## Current Coins
@@ -187,8 +187,8 @@ print(data)
 
 ## Who do I talk to?
 
-* Theodorus van der Sluijs
-* theo@vandersluijs.nl
+* Theodorus van der Sluijs (friends call me Theo)
+* theodorus@vandersluijs.nl
 
 ## License
 Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)

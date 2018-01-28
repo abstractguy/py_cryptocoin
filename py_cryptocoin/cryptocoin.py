@@ -223,6 +223,11 @@ class CryptoCoin:
             logging.warning(msg)        
     
     
+    
+    '''
+    The Following functions are useless for you, 
+    but very handy for the creator of this script
+    '''
     def returnOptions(self):
         """
             small function for myself to return a option list for __init__

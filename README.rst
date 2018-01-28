@@ -23,7 +23,7 @@ How do I get set up?
 
 -  Install this script with:
 
-   -  pip3 py\_cryptocoin --upgrade (or pip py\_nsapi --upgrade )
+   -  pip3 py\_cryptocoin --upgrade (or pip py\_cryptocoin --upgrade )
 
 -  ready to use it!
 
@@ -225,8 +225,8 @@ Example code
 Who do I talk to?
 -----------------
 
--  Theodorus van der Sluijs
--  theo@vandersluijs.nl
+-  Theodorus van der Sluijs (friends call me Theo)
+-  theodorus@vandersluijs.nl
 
 License
 -------
