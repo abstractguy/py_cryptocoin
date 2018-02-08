@@ -2,7 +2,7 @@ Python CryptoCoin
 =================
 
 This python3 script is based on the `coinmarketcap
-API <https://coinmarketcap.com/api/>`__
+API <https://coinmarketcap.com/api/>`_
 
 For getting coin data you can use the shortcodes for the coins.
 
@@ -91,7 +91,7 @@ You will get a DICT with the followin fields
 Example code
 ~~~~~~~~~~~~
 
-.. code:: python3
+::
 
     import CryptoCoin
 
@@ -147,7 +147,7 @@ You will get a DICT with the followin fields
 Example code
 ~~~~~~~~~~~~
 
-.. code:: python3
+::
 
     import CryptoCoin
 
@@ -207,7 +207,7 @@ You will get a DICT with the followin fields
 Example code
 ~~~~~~~~~~~~
 
-.. code:: python3
+::
 
     import CryptoCoin
 

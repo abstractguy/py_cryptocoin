@@ -18,6 +18,6 @@ setup(name='py_cryptocoin',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
         ],
-      keywords='trains transport train dutch ns',
+      keywords='crypto cryptocoin coins cryptocoins blockchain',
       packages=['py_cryptocoin'],
       zip_safe=False)
