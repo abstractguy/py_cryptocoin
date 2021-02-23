@@ -1,9 +1,12 @@
-import requests
-import logging
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
+import logging
 
 class CryptoCoin:
     def __init__(self):
+        self.key = self.get_API_keys()
+
         try:
             # list with shortcodes, it returns the right name
             self.options = {"btc": self.btc(),
@@ -106,467 +109,490 @@ class CryptoCoin:
                             "game": self.game(),
                             "pay": self.pay(),
                             "part": self.part(),
-                            }        
-        
-        
+                            }
+
         except Exception as e:
             msg = "def __init__ : " + str(e)
-            logging.warning(msg)        
-        
-    
-    def get_url(self, url=None):
+            logging.warning(msg)
+
+    def get_API_keys(self):
+        with open('keys.txt', 'r') as f:
+            return f.readline().replace("\n", '').split(':')[0]
+
+    def get_url(self, url=None, params=None):
         """
         Function to get the url and get the content
         returns decoded utf8 content
         """
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': self.key,
+        }
+
+        session = Session()
+        session.headers.update(headers)
+
         try:
             if url is None:
                 raise Exception("No Url")
-            
-            r = requests.get(url)
-            if r.status_code > 200:
-                raise Exception("Url " + url + "problem : " + str(r.status_code))
-            
-            content = r.content.decode("utf8")
+
+            if params is None:
+                raise Exception("No parameters")
+
+            #response = requests.get(url)
+            response = session.get(url, params=params)
+            if response.status_code > 200:
+                raise Exception("Url " + url + "problem : " + str(response.status_code))
+
+            data = json.loads(response.text)
+            content = response.content.decode("utf8")
             return content
-        
+
+        except (ConnectionError, Timeout, TooManyRedirects) as e:
+            print(e)
+
         except Exception as e:
             msg = "def get_url : " + str(e)
-            logging.warning(msg)            
-            
-            
+            logging.warning(msg)
 
-    def get_json_from_url(self, url):
+    def get_json_from_url(self, url, params=None):
         """
-        Function to parse the url content into json 
+        Function to parse the url content into json
         returns decoded utf8 content
         """
-        try:        
-            content = self.get_url(url)
+        try:
+            content = self.get_url(url, params=params)
             if content is None:
                 raise Exception("No Data")
-            
+
             return json.loads(content)
-        
+
         except Exception as e:
             msg = "def get_json_from_url : " + str(e)
             logging.warning(msg)
 
-
-
     def getAllCoinData(self, start=None, limit=None, currency=None):
         """
-        Function to get all coin currency data 
+        Function to get all coin currency data
         parameters start, limit, currency
         returns decoded utf8 Dict
         """
         try:
-            url = "https://api.coinmarketcap.com/v1/ticker/?start={}&limit={}&convert={}".format(start,limit,currency)
-            return self.get_json_from_url(url)
+            parameters = {
+                'start': start,
+                'limit': limit,
+                'convert': currency
+            }
+            #url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+            url = "https://pro-api.coinmarketcap.com/v1/ticker/?start={}&limit={}&convert={}".format(start, limit, currency)
+            return self.get_json_from_url(url, params=parameters)
         except Exception as e:
             msg = "def getAllCoinData : " + str(e)
-            logging.warning(msg)        
-        
-    
+            logging.warning(msg)
+
     def getGlobalData(self, currency=None):
         """
-        Function to get all coin global data 
+        Function to get all coin global data
         parameters currency
         returns decoded utf8 Dict
-        """        
+        """
         try:
-            url = " https://api.coinmarketcap.com/v1/global/?convert={}".format(currency)
-            return self.get_json_from_url(url)
-        
+            #url = "https://api.coinmarketcap.com/v1/global/?convert={}".format(currency)
+            url = 'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest'
+            parameters = {
+                'convert': currency
+            }
+            return self.get_json_from_url(url, params=parameters)
+
         except Exception as e:
             msg = "def getGlobalData : " + str(e)
             logging.warning(msg)
-        
+
     def getCoinData(self, Coin=None, currency=None):
         """
-        Function to get one coin currency data 
+        Function to get one coin currency data
         parameters cryptocoin shortcode, currency
         returns decoded utf8 Dict
-        """             
+        """
         try:
             coin = self.options[Coin.lower()]
-            url = "https://api.coinmarketcap.com/v1/ticker/{}/?convert={}".format(coin, currency)
-            self.data = self.get_json_from_url(url)
-        
+            parameters = {
+                'symbol': coin,
+                'convert': currency,
+                'skip_invalid': True
+            }
+            #url = "https://api.coinmarketcap.com/v1/ticker/{}/?convert={}".format(coin, currency)
+            url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+            self.data = self.get_json_from_url(url, params=parameters)
+
             return self.data
-        
+
         except Exception as e:
             msg = "def getCoinData : " + str(e)
             logging.warning(msg)
-        
-        
-        
+
     def returnCoins(self):
         """
             small function for myself to return a coinlist for the README file
             returns list with coins
         """
-        try: 
+        try:
             coinlist = ""
-        
+
             for d in self.data:
                 # "rip": self.rip(),
                 symbol = d['symbol']
                 symbol = symbol.lower()
-                
-                coinlist += "- '" + symbol + "' : '" + d['name'] + "', "    
-            
+
+                coinlist += "- '" + symbol + "' : '" + d['name'] + "', "
+
             return coinlist
-            
+
         except Exception as e:
             msg = "def returnCoins : " + str(e)
-            logging.warning(msg)        
-    
-    
-    
+            logging.warning(msg)
+
     '''
-    The Following functions are useless for you, 
+    The Following functions are useless for you,
     but very handy for the creator of this script
     '''
     def returnOptions(self):
         """
             small function for myself to return a option list for __init__
-            returns list with options 
-        """        
+            returns list with options
+        """
         try:
             option = ""
-            
+
             for d in self.data:
                 # "rip": self.rip(),
                 symbol = d['symbol']
                 symbol = symbol.lower()
                 option += '"' + symbol + '": self.' + symbol + "(),\n"
-            
+
             return option
         except Exception as e:
             msg = "def returnOptions : " + str(e)
             logging.warning(msg)
-        
+
     def returnFunctions(self):
         """
             small function for myself to return a list with functions for the self.options
-            returns list with functions 
-        """           
+            returns list with functions
+        """
         try:
             functie = ""
-            
+
             for d in self.data:
                 # "rip": self.rip(),
                 symbol = d['symbol']
                 symbol = symbol.lower()
-                
+
                 functie += "def " + symbol+ "(self):\n"
                 functie += "\t return '" + d['id'] + "'\n\n"
         except Exception as e:
             msg = "def returnFunctions : " + str(e)
-            logging.warning(msg)        
-        
-        
-        
+            logging.warning(msg)
+
     """
     some functions to return the right coin name
     """
     def btc(self):
          return 'bitcoin'
-    
+
     def eth(self):
          return 'ethereum'
-    
+
     def xrp(self):
          return 'ripple'
-    
+
     def bch(self):
          return 'bitcoin-cash'
-    
+
     def ada(self):
          return 'cardano'
-    
+
     def ltc(self):
          return 'litecoin'
-    
+
     def xem(self):
          return 'nem'
-    
+
     def neo(self):
          return 'neo'
-    
+
     def xlm(self):
          return 'stellar'
-    
+
     def eos(self):
          return 'eos'
-    
+
     def miota(self):
          return 'iota'
-    
+
     def dash(self):
          return 'dash'
-    
+
     def xmr(self):
          return 'monero'
-    
+
     def trx(self):
          return 'tron'
-    
+
     def btg(self):
          return 'bitcoin-gold'
-    
+
     def icx(self):
          return 'icon'
-    
+
     def qtum(self):
          return 'qtum'
-    
+
     def etc(self):
          return 'ethereum-classic'
-    
+
     def lsk(self):
          return 'lisk'
-    
+
     def xrb(self):
          return 'raiblocks'
-    
+
     def ven(self):
          return 'vechain'
-    
+
     def omg(self):
          return 'omisego'
-    
+
     def usdt(self):
          return 'tether'
-    
+
     def ppt(self):
          return 'populous'
-    
+
     def zec(self):
          return 'zcash'
-    
+
     def xvg(self):
          return 'verge'
-    
+
     def sc(self):
          return 'siacoin'
-    
+
     def bnb(self):
          return 'binance-coin'
-    
+
     def strat(self):
          return 'stratis'
-    
+
     def bcn(self):
          return 'bytecoin-bcn'
-    
+
     def steem(self):
          return 'steem'
-    
+
     def ardr(self):
          return 'ardor'
-    
+
     def snt(self):
          return 'status'
-    
+
     def mkr(self):
          return 'maker'
-    
+
     def rep(self):
          return 'augur'
-    
+
     def bts(self):
          return 'bitshares'
-    
+
     def kcs(self):
          return 'kucoin-shares'
-    
+
     def waves(self):
          return 'waves'
-    
+
     def zrx(self):
          return '0x'
-    
+
     def doge(self):
          return 'dogecoin'
-    
+
     def etn(self):
          return 'electroneum'
-    
+
     def veri(self):
          return 'veritaseum'
-    
+
     def kmd(self):
          return 'komodo'
-    
+
     def dcr(self):
          return 'decred'
-    
+
     def drgn(self):
          return 'dragonchain'
-    
+
     def wtc(self):
          return 'walton'
-    
+
     def dcn(self):
          return 'dentacoin'
-    
+
     def lrc(self):
          return 'loopring'
-    
+
     def ark(self):
          return 'ark'
-    
+
     def salt(self):
          return 'salt'
-    
+
     def qash(self):
          return 'qash'
-    
+
     def dgb(self):
          return 'digibyte'
-    
+
     def bat(self):
          return 'basic-attention-token'
-    
+
     def gnt(self):
          return 'golem-network-tokens'
-    
+
     def hsr(self):
          return 'hshare'
-    
+
     def knc(self):
          return 'kyber-network'
-    
+
     def gas(self):
          return 'gas'
-    
+
     def wax(self):
          return 'wax'
-    
+
     def ethos(self):
          return 'ethos'
-    
+
     def pivx(self):
          return 'pivx'
-    
+
     def gbyte(self):
          return 'byteball'
-    
+
     def fun(self):
          return 'funfair'
-    
+
     def aion(self):
          return 'aion'
-    
+
     def rhoc(self):
          return 'rchain'
-    
+
     def zcl(self):
          return 'zclassic'
-    
+
     def fct(self):
          return 'factom'
-    
+
     def smart(self):
          return 'smartcash'
-    
+
     def dent(self):
          return 'dent'
-    
+
     def mona(self):
          return 'monacoin'
-    
+
     def elf(self):
          return 'aelf'
-    
+
     def powr(self):
          return 'power-ledger'
-    
+
     def dgd(self):
          return 'digixdao'
-    
+
     def kin(self):
          return 'kin'
-    
+
     def rdd(self):
          return 'reddcoin'
-    
+
     def ae(self):
          return 'aeternity'
-    
+
     def btm(self):
          return 'bytom'
-    
+
     def nas(self):
          return 'nebulas-token'
-    
+
     def sys(self):
          return 'syscoin'
-    
+
     def req(self):
          return 'request-network'
-    
+
     def nebl(self):
          return 'neblio'
-    
+
     def link(self):
          return 'chainlink'
-    
+
     def eng(self):
          return 'enigma-project'
-    
+
     def xp(self):
          return 'experience-points'
-    
+
     def gxs(self):
          return 'gxshares'
-    
+
     def maid(self):
          return 'maidsafecoin'
-    
+
     def sub(self):
          return 'substratum'
-    
+
     def xzc(self):
          return 'zcoin'
-    
+
     def nxs(self):
          return 'nexus'
-    
+
     def nxt(self):
          return 'nxt'
-    
+
     def med(self):
          return 'medibloc'
-    
+
     def emc(self):
          return 'emercoin'
-    
+
     def btx(self):
          return 'bitcore'
-    
+
     def bnt(self):
          return 'bancor'
-    
+
     def cnd(self):
          return 'cindicator'
-    
+
     def qsp(self):
          return 'quantstamp'
-    
+
     def cnx(self):
          return 'cryptonex'
-    
+
     def icn(self):
          return 'iconomi'
-    
+
     def game(self):
          return 'gamecredits'
-    
+
     def pay(self):
          return 'tenx'
-    
+
     def part(self):
          return 'particl'

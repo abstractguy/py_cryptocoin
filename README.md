@@ -1,3 +1,8 @@
+# EDIT: This repository was deprecated, dead and unusable, so I, abstractguy, took it over.
+# Doc isn't up to date, but the programs are usable again.
+# kthxbye
+
+
 #Python CryptoCoin
 
 This python3 script is based on the [coinmarketcap API](https://coinmarketcap.com/api/)
